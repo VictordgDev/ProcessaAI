@@ -2,9 +2,13 @@
 
 Plataforma inteligente para conectar clientes a prestadores de serviços, com interface de chat baseada em IA.
 
+> ⚠️ **IMPORTANTE:** Se você clonou o projeto antes, veja [CORRECOES_VERCEL.md](CORRECOES_VERCEL.md) - Route groups foram removidos para corrigir conflitos de build.
+
+> ❓ **Dúvida sobre Route Groups?** Veja [EXPLICACAO_ROUTE_GROUPS.md](EXPLICACAO_ROUTE_GROUPS.md) para entender por que não usamos `(admin)`, `(client)`, etc.
+
 > 🚀 **Início Rápido:** Veja o [SETUP_CHECKLIST.md](SETUP_CHECKLIST.md) para configurar em minutos!
 > 
-> 📖 **Guia Completo:** [QUICKSTART.md](QUICKSTART.md) | **Estrutura:** [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+> 📖 **Guia Completo:** [QUICKSTART.md](QUICKSTART.md) | **Deploy:** [VERCEL_DEPLOY.md](VERCEL_DEPLOY.md) | **Rotas:** [ROTAS_ATUALIZADAS.md](ROTAS_ATUALIZADAS.md)
 
 ## 🚀 Stack Tecnológica
 

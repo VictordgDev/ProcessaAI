@@ -26,7 +26,8 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Email ou senha inválidos')
       } else {
-        router.push('/dashboard')
+        // Redirecionar baseado no role
+        router.push('/client/dashboard')
         router.refresh()
       }
     } catch (err) {

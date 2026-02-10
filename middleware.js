@@ -23,18 +23,21 @@ export async function middleware(request) {
   // Proteção por role
   const role = token.role
 
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/requests') || pathname.startsWith('/settings')) {
+  // Rotas do cliente
+  if (pathname.startsWith('/client')) {
     if (role !== 'client') {
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
 
-  if (pathname.startsWith('/inbox') || pathname.startsWith('/services') || pathname.startsWith('/profile')) {
+  // Rotas do prestador
+  if (pathname.startsWith('/provider')) {
     if (role !== 'provider') {
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
 
+  // Rotas do admin
   if (pathname.startsWith('/admin')) {
     if (role !== 'admin') {
       return NextResponse.redirect(new URL('/login', request.url))

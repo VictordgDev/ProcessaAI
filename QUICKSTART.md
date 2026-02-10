@@ -67,7 +67,10 @@ Após executar o seed, você pode fazer login com:
 - `/login` - Login
 - `/register` - Cadastro (escolha entre Cliente ou Prestador)
 - `/providers` - Buscar prestadores
-- `/dashboard` - Dashboard (redireciona conforme role)
+- `/pricing` - Planos e preços
+- `/client/dashboard` - Dashboard do cliente
+- `/provider/dashboard` - Dashboard do prestador
+- `/admin/dashboard` - Dashboard admin
 - `/api/health` - Health check da API
 
 ## 🐛 Problemas Comuns
