@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  client
+  provider
+  admin
+}
+
+enum RequestStatus {
+  pending
+  accepted
+  in_progress
+  completed
+  cancelled
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          Role      @default(client)
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  providerProfile ProviderProfile?
+  requests        Request[]
+  messages        Message[]
+  reviews         Review[]
+  settings        Settings?
+
+  @@index([email])
+  @@index([role])
+}
+
+model ProviderProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug        String   @unique
+  bio         String?
+  phone       String?
+  location    String?
+  categories  String[] // Array de categorias
+  verified    Boolean  @default(false)
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  services Service[]
+  requests Request[]
+  reviews  Review[]
+
+  @@index([slug])
+  @@index([verified])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  providerId  String
+  provider    ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  category    String
+  price       Float?
+  priceType   String   @default("negotiable") // fixed, hourly, negotiable
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([category])
+  @@index([active])
+}
+
+model Request {
+  id          String        @id @default(cuid())
+  clientId    String
+  client      User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  providerId  String?
+  provider    ProviderProfile? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  title       String
+  description String
+  category    String
+  status      RequestStatus @default(pending)
+  aiSummary   String?       // Resumo gerado pela IA
+  aiCategory  String?       // Categoria sugerida pela IA
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  messages Message[]
+
+  @@index([clientId])
+  @@index([providerId])
+  @@index([status])
+  @@index([category])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  requestId String
+  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([requestId])
+  @@index([userId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  clientId   String
+  client     User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  rating     Int      // 1-5
+  comment    String?
+  hidden     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([providerId])
+  @@index([clientId])
+  @@index([hidden])
+}
+
+model Settings {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailNotifications    Boolean  @default(true)
+  smsNotifications      Boolean  @default(false)
+  marketingEmails       Boolean  @default(false)
+  language              String   @default("pt-BR")
+  timezone              String   @default("America/Sao_Paulo")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}

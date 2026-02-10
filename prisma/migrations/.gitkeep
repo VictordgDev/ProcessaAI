@@ -1,0 +1,2 @@
+# Pasta para migrations do Prisma
+# As migrations serão geradas automaticamente ao executar: npm run prisma:migrate
