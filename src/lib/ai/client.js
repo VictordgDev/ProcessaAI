@@ -1,13 +1,14 @@
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
 })
 
 export async function generateCompletion(prompt, options = {}) {
   try {
     const response = await openai.chat.completions.create({
-      model: options.model || 'gpt-4o-mini',
+      model: options.model || 'deepseek-chat',
       messages: [
         {
           role: 'system',

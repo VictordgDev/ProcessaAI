@@ -83,11 +83,27 @@ export default function HomePage() {
     setMessageInput('')
     setIsLoading(true)
 
-    // Simular resposta da IA
-    setTimeout(() => {
+    try {
+      // Chamar API do DeepSeek
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [...(currentChat?.messages || []), userMessage]
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro ao obter resposta')
+      }
+
+      const data = await response.json()
+      
       const aiResponse = {
         role: 'ai',
-        content: 'Esta é uma resposta simulada da IA. Para integrar uma IA real, conecte a API do OpenAI, Anthropic ou outro provedor no backend.'
+        content: data.message
       }
       
       setChats(prevChats =>
@@ -97,8 +113,23 @@ export default function HomePage() {
             : chat
         )
       )
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error)
+      const errorResponse = {
+        role: 'ai',
+        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.'
+      }
+      
+      setChats(prevChats =>
+        prevChats.map(chat =>
+          chat.id === chatId
+            ? { ...chat, messages: [...chat.messages, errorResponse] }
+            : chat
+        )
+      )
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const formatDate = (dateString) => {
