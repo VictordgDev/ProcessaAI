@@ -41,11 +41,53 @@ export default function HomePage() {
       id: Date.now(),
       title: 'Nova Conversa',
       messages: [],
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      isPinned: false
     }
     setChats([newChat, ...chats])
     setCurrentChatId(newChat.id)
   }
+
+  const deleteChat = (chatId, e) => {
+    e.stopPropagation()
+    if (confirm('Deseja realmente excluir esta conversa?')) {
+      const updatedChats = chats.filter(c => c.id !== chatId)
+      setChats(updatedChats)
+      
+      // Se deletou o chat atual, selecionar outro
+      if (chatId === currentChatId) {
+        setCurrentChatId(updatedChats.length > 0 ? updatedChats[0].id : null)
+      }
+      
+      // Atualizar localStorage
+      if (updatedChats.length === 0) {
+        localStorage.removeItem('chats')
+      }
+    }
+  }
+
+  const togglePinChat = (chatId, e) => {
+    e.stopPropagation()
+    
+    const chat = chats.find(c => c.id === chatId)
+    const pinnedCount = chats.filter(c => c.isPinned).length
+    
+    // Se está tentando fixar e já tem 3 fixados
+    if (!chat.isPinned && pinnedCount >= 3) {
+      alert('Você pode fixar no máximo 3 conversas')
+      return
+    }
+    
+    setChats(prevChats =>
+      prevChats.map(c =>
+        c.id === chatId ? { ...c, isPinned: !c.isPinned } : c
+      )
+    )
+  }
+
+  // Separar chats fixados e não fixados
+  const pinnedChats = chats.filter(c => c.isPinned)
+  const unpinnedChats = chats.filter(c => !c.isPinned)
 
   const sendMessage = async () => {
     const content = messageInput.trim()
@@ -149,7 +191,7 @@ export default function HomePage() {
       {/* Sidebar */}
       <aside className="w-80 bg-gray-900 text-white flex flex-col border-r border-gray-700">
         <div className="p-5 border-b border-gray-700">
-          <h2 className="text-xl font-bold mb-4">PontesIA</h2>
+          <h2 className="text-xl font-bold mb-4">ProcessaAI</h2>
           <button
             onClick={createNewChat}
             className="w-full py-3 px-4 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg transition-colors text-sm font-medium"
@@ -159,20 +201,97 @@ export default function HomePage() {
         </div>
 
         <div className="flex-1 overflow-y-auto p-3">
-          {chats.map(chat => (
-            <div
-              key={chat.id}
-              onClick={() => setCurrentChatId(chat.id)}
-              className={`p-3 mb-2 rounded-lg cursor-pointer transition-colors ${
-                chat.id === currentChatId
-                  ? 'bg-gray-700 border-l-4 border-blue-500'
-                  : 'bg-gray-800 hover:bg-gray-700'
-              }`}
-            >
-              <div className="text-sm font-medium truncate">{chat.title}</div>
-              <div className="text-xs text-gray-400 mt-1">{formatDate(chat.createdAt)}</div>
+          {/* Chats Fixados */}
+          {pinnedChats.length > 0 && (
+            <div className="mb-4">
+              <div className="text-xs text-gray-400 uppercase font-semibold mb-2 px-2">Fixados</div>
+              {pinnedChats.map(chat => (
+                <div
+                  key={chat.id}
+                  onClick={() => setCurrentChatId(chat.id)}
+                  className={`p-3 mb-2 rounded-lg cursor-pointer transition-colors relative group ${
+                    chat.id === currentChatId
+                      ? 'bg-gray-700 border-l-4 border-blue-500'
+                      : 'bg-gray-800 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{chat.title}</div>
+                      <div className="text-xs text-gray-400 mt-1">{formatDate(chat.createdAt)}</div>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => togglePinChat(chat.id, e)}
+                        className="p-1 hover:bg-gray-600 rounded"
+                        title="Desafixar"
+                      >
+                        📌
+                      </button>
+                      <button
+                        onClick={(e) => deleteChat(chat.id, e)}
+                        className="p-1 hover:bg-red-600 rounded"
+                        title="Excluir"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+
+          {/* Chats Não Fixados */}
+          {unpinnedChats.length > 0 && (
+            <div>
+              {pinnedChats.length > 0 && (
+                <div className="text-xs text-gray-400 uppercase font-semibold mb-2 px-2">Recentes</div>
+              )}
+              {unpinnedChats.map(chat => (
+                <div
+                  key={chat.id}
+                  onClick={() => setCurrentChatId(chat.id)}
+                  className={`p-3 mb-2 rounded-lg cursor-pointer transition-colors relative group ${
+                    chat.id === currentChatId
+                      ? 'bg-gray-700 border-l-4 border-blue-500'
+                      : 'bg-gray-800 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{chat.title}</div>
+                      <div className="text-xs text-gray-400 mt-1">{formatDate(chat.createdAt)}</div>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => togglePinChat(chat.id, e)}
+                        className="p-1 hover:bg-gray-600 rounded"
+                        title="Fixar"
+                      >
+                        📍
+                      </button>
+                      <button
+                        onClick={(e) => deleteChat(chat.id, e)}
+                        className="p-1 hover:bg-red-600 rounded"
+                        title="Excluir"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {chats.length === 0 && (
+            <div className="text-center text-gray-500 text-sm mt-8">
+              Nenhuma conversa ainda.
+              <br />
+              Clique em "Nova Conversa" para começar.
+            </div>
+          )}
         </div>
 
         <div className="p-4 border-t border-gray-700">
@@ -188,31 +307,31 @@ export default function HomePage() {
       {/* Área de Chat */}
       <main className="flex-1 flex flex-col bg-white">
         <header className="p-5 border-b border-gray-200 bg-white">
-          <h1 className="text-xl font-semibold text-gray-900">Chat com IA</h1>
-          <p className="text-sm text-gray-500 mt-1">Conectando clientes e prestadores de serviços</p>
+          <h1 className="text-xl font-semibold text-gray-900">ProcessaAI - Assistente Jurídico</h1>
+          <p className="text-sm text-gray-500 mt-1">Apoio jurídico inteligente baseado na legislação brasileira</p>
         </header>
 
         <div className="flex-1 overflow-y-auto p-5">
           {!currentChat || currentChat.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <h2 className="text-3xl font-bold text-gray-900 mb-3">
-                Olá! Como posso ajudar você hoje?
+                Olá! Como posso ajudá-lo juridicamente hoje?
               </h2>
               <p className="text-gray-600 mb-8">
-                Digite sua mensagem abaixo para começar uma conversa
+                Faça suas perguntas jurídicas ou solicite documentos legais
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
                 <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 cursor-pointer transition-colors">
-                  <p className="text-sm text-gray-700">💼 Encontrar prestadores de serviços</p>
+                  <p className="text-sm text-gray-700">⚖️ Tirar dúvidas sobre direito civil, trabalhista, penal...</p>
                 </div>
                 <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 cursor-pointer transition-colors">
-                  <p className="text-sm text-gray-700">🔍 Buscar por categoria</p>
+                  <p className="text-sm text-gray-700">📄 Criar contratos e documentos legais</p>
                 </div>
                 <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 cursor-pointer transition-colors">
-                  <p className="text-sm text-gray-700">📝 Criar solicitação de serviço</p>
+                  <p className="text-sm text-gray-700">📝 Resumir textos jurídicos e processos</p>
                 </div>
                 <div className="p-4 border border-gray-200 rounded-lg hover:border-blue-500 cursor-pointer transition-colors">
-                  <p className="text-sm text-gray-700">❓ Como funciona a plataforma</p>
+                  <p className="text-sm text-gray-700">🔍 Analisar contratos e identificar riscos</p>
                 </div>
               </div>
             </div>

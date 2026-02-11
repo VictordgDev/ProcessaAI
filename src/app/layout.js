@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'PontesIA - Conectando Clientes e Prestadores',
-  description: 'Plataforma inteligente para conectar clientes a prestadores de serviços',
+  title: 'ProcessaAI - Assistente Jurídico Inteligente',
+  description: 'Plataforma de apoio jurídico com IA baseada na legislação brasileira',
 }
 
 export default function RootLayout({ children }) {

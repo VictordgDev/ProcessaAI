@@ -1,6 +1,6 @@
-# PontesIA
+# ProcessaAI
 
-Plataforma inteligente para conectar clientes a prestadores de serviços, com interface de chat baseada em IA (DeepSeek).
+Plataforma de apoio jurídico inteligente com IA baseada na legislação brasileira.
 
 > 📚 **Documentação Completa:** Veja [RESUMO.md](RESUMO.md) para setup, configuração e troubleshooting.
 

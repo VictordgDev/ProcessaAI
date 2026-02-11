@@ -1,4 +1,4 @@
-# 📚 PontesIA - Documentação Consolidada
+# 📚 ProcessaAI - Documentação Consolidada
 
 ## Índice
 
@@ -16,15 +16,23 @@
 
 ## 1. Sobre o Projeto
 
-Plataforma inteligente para conectar clientes a prestadores de serviços, com interface de chat baseada em IA (DeepSeek).
+Plataforma de apoio jurídico inteligente com IA (DeepSeek) baseada na legislação brasileira.
 
 **Funcionalidades principais:**
-- Chat com IA na página inicial (sem necessidade de login)
+- Chat jurídico com IA na página inicial (sem necessidade de login)
+- Responde dúvidas sobre todas as áreas do direito
+- Cria documentos legais personalizados
+- Resume textos e documentos jurídicos
+- Analisa contratos e identifica riscos
 - Sistema de autenticação com 3 roles (Client, Provider, Admin)
-- CRUD de serviços e solicitações
-- Sistema de mensagens entre clientes e prestadores
-- Classificação automática de solicitações via IA
-- Sugestões de respostas para prestadores
+
+**Áreas do Direito Cobertas:**
+- Direito Civil
+- Direito Trabalhista
+- Direito Penal
+- Direito Empresarial
+- Direito do Consumidor
+- E todas as demais áreas do direito brasileiro
 
 ---
 
